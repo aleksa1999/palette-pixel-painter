@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GradientCanvas } from './GradientCanvas';
 import { ColorSlider } from './ColorSlider';
+import { OpacitySlider } from './OpacitySlider';
 import { ThemeColors } from './ThemeColors';
 import { useColorState } from '../hooks/useColorState';
+import { Pipette } from 'lucide-react';
 
 export const ColorPicker = () => {
   const {
@@ -38,6 +40,27 @@ export const ColorPicker = () => {
     }
   }, [setHex]);
 
+  const handleOpacityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 0 && value <= 100) {
+      setOpacity(value);
+    }
+  }, [setOpacity]);
+
+  const handleEyedropper = useCallback(() => {
+    if ('EyeDropper' in window) {
+      // @ts-ignore - EyeDropper API is not yet in TypeScript types
+      const eyeDropper = new EyeDropper();
+      eyeDropper.open().then((result: any) => {
+        setHex(result.sRGBHex);
+      }).catch((error: any) => {
+        console.log('User cancelled the eyedropper');
+      });
+    } else {
+      console.log('EyeDropper API not supported');
+    }
+  }, [setHex]);
+
   if (!isOpen) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -54,14 +77,6 @@ export const ColorPicker = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
-        {/* Color Preview Circle */}
-        <div className="flex justify-center mb-6">
-          <div 
-            className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-sm"
-            style={{ backgroundColor: hex }}
-          />
-        </div>
-
         {/* Gradient Canvas */}
         <div className="mb-6">
           <GradientCanvas
@@ -72,12 +87,41 @@ export const ColorPicker = () => {
           />
         </div>
 
-        {/* Color Slider */}
-        <div className="mb-6">
-          <ColorSlider
-            hue={hsb.h}
-            onChange={handleHueChange}
-          />
+        {/* Hue Slider with Eyedropper */}
+        <div className="mb-6 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleEyedropper}
+            className="p-2 hover:bg-gray-100"
+          >
+            <Pipette className="w-4 h-4" />
+          </Button>
+          <div className="flex-1">
+            <ColorSlider
+              hue={hsb.h}
+              onChange={handleHueChange}
+            />
+          </div>
+        </div>
+
+        {/* Opacity Slider with Eyedropper */}
+        <div className="mb-6 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleEyedropper}
+            className="p-2 hover:bg-gray-100"
+          >
+            <Pipette className="w-4 h-4" />
+          </Button>
+          <div className="flex-1">
+            <OpacitySlider
+              opacity={opacity}
+              color={hex}
+              onChange={setOpacity}
+            />
+          </div>
         </div>
 
         {/* Custom Color Section */}
@@ -94,9 +138,13 @@ export const ColorPicker = () => {
               className="flex-1 font-mono text-sm"
               placeholder="#D28E9E"
             />
-            <span className="text-sm font-medium text-gray-600 w-12 text-right">
-              {Math.round(opacity)}%
-            </span>
+            <Input
+              value={Math.round(opacity)}
+              onChange={handleOpacityInputChange}
+              className="w-16 text-sm text-center"
+              placeholder="100"
+            />
+            <span className="text-sm font-medium text-gray-600">%</span>
           </div>
         </div>
 
@@ -117,7 +165,7 @@ export const ColorPicker = () => {
           </Button>
           <Button 
             onClick={() => {
-              console.log('Selected color:', hex);
+              console.log('Selected color:', hex, 'Opacity:', opacity);
               setIsOpen(false);
             }}
             className="bg-green-500 hover:bg-green-600 text-white"
