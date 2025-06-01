@@ -49,6 +49,7 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
   }, [drawCanvas]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     isDragging.current = true;
     handleMouseMove(e);
   }, []);
@@ -60,11 +61,11 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
 
-    const saturation = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    const brightness = Math.max(0, Math.min(100, 100 - (y / rect.height) * 100));
+    const saturation = (x / rect.width) * 100;
+    const brightness = 100 - (y / rect.height) * 100;
 
     onChange(saturation, brightness);
   }, [onChange]);
@@ -74,8 +75,14 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
   }, []);
 
   useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => handleMouseMove(e);
-    const handleGlobalMouseUp = () => handleMouseUp();
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseMove(e);
+    };
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseUp();
+    };
 
     if (isDragging.current) {
       document.addEventListener('mousemove', handleGlobalMouseMove);

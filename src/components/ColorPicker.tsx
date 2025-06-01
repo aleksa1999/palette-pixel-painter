@@ -35,9 +35,7 @@ export const ColorPicker = () => {
 
   const handleHexChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-      setHex(value);
-    }
+    setHex(value);
   }, [setHex]);
 
   const handleOpacityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +44,13 @@ export const ColorPicker = () => {
       setOpacity(value);
     }
   }, [setOpacity]);
+
+  const handleOpacitySpinnerChange = useCallback((increment: boolean) => {
+    const newOpacity = increment ? 
+      Math.min(100, Math.round(opacity) + 1) : 
+      Math.max(0, Math.round(opacity) - 1);
+    setOpacity(newOpacity);
+  }, [opacity, setOpacity]);
 
   const handleEyedropper = useCallback(() => {
     if ('EyeDropper' in window) {
@@ -87,40 +92,35 @@ export const ColorPicker = () => {
           />
         </div>
 
-        {/* Hue Slider with Eyedropper */}
-        <div className="mb-6 flex items-center gap-3">
+        {/* Eyedropper and Sliders Section */}
+        <div className="mb-6 flex items-start gap-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleEyedropper}
-            className="p-2 hover:bg-gray-100"
+            className="p-2 hover:bg-gray-100 flex-shrink-0"
+            style={{ height: '60px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
-          <div className="flex-1">
-            <ColorSlider
-              hue={hsb.h}
-              onChange={handleHueChange}
-            />
-          </div>
-        </div>
-
-        {/* Opacity Slider with Eyedropper */}
-        <div className="mb-6 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleEyedropper}
-            className="p-2 hover:bg-gray-100"
-          >
-            <Pipette className="w-4 h-4" />
-          </Button>
-          <div className="flex-1">
-            <OpacitySlider
-              opacity={opacity}
-              color={hex}
-              onChange={setOpacity}
-            />
+          
+          <div className="flex-1 space-y-2">
+            {/* Hue Slider */}
+            <div>
+              <ColorSlider
+                hue={hsb.h}
+                onChange={handleHueChange}
+              />
+            </div>
+            
+            {/* Opacity Slider */}
+            <div>
+              <OpacitySlider
+                opacity={opacity}
+                color={hex}
+                onChange={setOpacity}
+              />
+            </div>
           </div>
         </div>
 
@@ -138,12 +138,33 @@ export const ColorPicker = () => {
               className="flex-1 font-mono text-sm"
               placeholder="#D28E9E"
             />
-            <Input
-              value={Math.round(opacity)}
-              onChange={handleOpacityInputChange}
-              className="w-16 text-sm text-center"
-              placeholder="100"
-            />
+            
+            {/* Opacity Spinner */}
+            <div className="relative flex items-center">
+              <Input
+                value={Math.round(opacity)}
+                onChange={handleOpacityInputChange}
+                className="w-16 text-sm text-center pr-8"
+                placeholder="100"
+                type="number"
+                min="0"
+                max="100"
+              />
+              <div className="absolute right-1 flex flex-col">
+                <button
+                  onClick={() => handleOpacitySpinnerChange(true)}
+                  className="w-4 h-3 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
+                >
+                  ▲
+                </button>
+                <button
+                  onClick={() => handleOpacitySpinnerChange(false)}
+                  className="w-4 h-3 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
+                >
+                  ▼
+                </button>
+              </div>
+            </div>
             <span className="text-sm font-medium text-gray-600">%</span>
           </div>
         </div>

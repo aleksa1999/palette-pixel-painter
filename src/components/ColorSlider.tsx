@@ -11,6 +11,7 @@ export const ColorSlider: React.FC<ColorSliderProps> = ({ hue, onChange }) => {
   const isDragging = useRef(false);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     isDragging.current = true;
     handleMouseMove(e);
   }, []);
@@ -22,8 +23,8 @@ export const ColorSlider: React.FC<ColorSliderProps> = ({ hue, onChange }) => {
     if (!slider) return;
 
     const rect = slider.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const newHue = Math.max(0, Math.min(360, (x / rect.width) * 360));
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const newHue = (x / rect.width) * 360;
 
     onChange(newHue);
   }, [onChange]);
@@ -33,8 +34,14 @@ export const ColorSlider: React.FC<ColorSliderProps> = ({ hue, onChange }) => {
   }, []);
 
   React.useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => handleMouseMove(e);
-    const handleGlobalMouseUp = () => handleMouseUp();
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseMove(e);
+    };
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseUp();
+    };
 
     if (isDragging.current) {
       document.addEventListener('mousemove', handleGlobalMouseMove);

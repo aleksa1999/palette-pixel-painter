@@ -12,6 +12,7 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
   const isDragging = useRef(false);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     isDragging.current = true;
     handleMouseMove(e);
   }, []);
@@ -23,8 +24,8 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
     if (!slider) return;
 
     const rect = slider.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const newOpacity = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const newOpacity = (x / rect.width) * 100;
 
     onChange(newOpacity);
   }, [onChange]);
@@ -34,8 +35,14 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
   }, []);
 
   React.useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => handleMouseMove(e);
-    const handleGlobalMouseUp = () => handleMouseUp();
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseMove(e);
+    };
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      e.preventDefault();
+      handleMouseUp();
+    };
 
     if (isDragging.current) {
       document.addEventListener('mousemove', handleGlobalMouseMove);
@@ -55,8 +62,7 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
         onMouseDown={handleMouseDown}
         className="w-full h-6 rounded-full cursor-pointer border border-gray-200"
         style={{
-          background: `linear-gradient(to right, transparent 0%, ${color} 100%), 
-                      url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='a' patternUnits='userSpaceOnUse' width='8' height='8'%3e%3crect fill='%23f3f4f6' width='4' height='4'/%3e%3crect fill='%23e5e7eb' x='4' y='4' width='4' height='4'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100%25' height='100%25' fill='url(%23a)'/%3e%3c/svg%3e")`
+          background: `linear-gradient(to right, transparent 0%, ${color} 100%)`
         }}
       />
       {/* Slider Handle */}
