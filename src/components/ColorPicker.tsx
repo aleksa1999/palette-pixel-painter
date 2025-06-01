@@ -35,6 +35,7 @@ export const ColorPicker = () => {
 
   const handleHexChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    // Allow typing hex values freely
     setHex(value);
   }, [setHex]);
 
@@ -139,12 +140,12 @@ export const ColorPicker = () => {
               placeholder="#D28E9E"
             />
             
-            {/* Opacity Spinner */}
+            {/* Opacity Spinner - Remove browser default spinners */}
             <div className="relative flex items-center">
               <Input
                 value={Math.round(opacity)}
                 onChange={handleOpacityInputChange}
-                className="w-16 text-sm text-center pr-8"
+                className="w-16 text-sm text-center pr-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="100"
                 type="number"
                 min="0"

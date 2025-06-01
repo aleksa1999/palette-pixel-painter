@@ -1,5 +1,5 @@
 
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 
 interface OpacitySliderProps {
   opacity: number;
@@ -11,14 +11,8 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
   const sliderRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    isDragging.current = true;
-    handleMouseMove(e);
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent | MouseEvent) => {
-    if (!isDragging.current && e.type !== 'mousedown') return;
+  const handleMouseMove = useCallback((e: MouseEvent | React.MouseEvent) => {
+    if (!isDragging.current) return;
 
     const slider = sliderRef.current;
     if (!slider) return;
@@ -30,24 +24,27 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
     onChange(newOpacity);
   }, [onChange]);
 
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    handleMouseMove(e);
+  }, [handleMouseMove]);
+
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
-      e.preventDefault();
       handleMouseMove(e);
     };
-    const handleGlobalMouseUp = (e: MouseEvent) => {
-      e.preventDefault();
+
+    const handleGlobalMouseUp = () => {
       handleMouseUp();
     };
 
-    if (isDragging.current) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-    }
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    document.addEventListener('mouseup', handleGlobalMouseUp);
 
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
