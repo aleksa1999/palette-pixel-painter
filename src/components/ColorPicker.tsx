@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GradientCanvas } from './GradientCanvas';
@@ -35,9 +35,15 @@ export const ColorPicker = () => {
 
   const handleHexChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow typing hex values freely
     setHex(value);
   }, [setHex]);
+
+  const handleHueInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 0 && value <= 360) {
+      setHsb(prev => ({ ...prev, h: value }));
+    }
+  }, [setHsb]);
 
   const handleOpacityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -66,6 +72,18 @@ export const ColorPicker = () => {
       console.log('EyeDropper API not supported');
     }
   }, [setHex]);
+
+  // Calculate color with opacity for preview
+  const colorWithOpacity = useMemo(() => {
+    // Convert hex to rgba with opacity
+    if (hex.startsWith('#') && hex.length === 7) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+    }
+    return hex;
+  }, [hex, opacity]);
 
   if (!isOpen) {
     return (
@@ -100,7 +118,7 @@ export const ColorPicker = () => {
             size="sm"
             onClick={handleEyedropper}
             className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10 h-10"
-            style={{ height: '56px' }}
+            style={{ height: '48px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
@@ -128,10 +146,10 @@ export const ColorPicker = () => {
         {/* Custom Color Section */}
         <div className="mb-6">
           <h3 className="text-sm font-medium text-gray-500 mb-3">Custom Color</h3>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-3">
             <div 
-              className="w-8 h-8 rounded-lg border border-gray-200 flex-shrink-0"
-              style={{ backgroundColor: hex }}
+              className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0"
+              style={{ backgroundColor: colorWithOpacity }}
             />
             <Input
               value={hex}
@@ -139,13 +157,27 @@ export const ColorPicker = () => {
               className="flex-1 font-mono text-sm"
               placeholder="#D28E9E"
             />
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-gray-600 w-8">H:</span>
+            <Input
+              value={Math.round(hsb.h)}
+              onChange={handleHueInputChange}
+              className="flex-1 text-sm"
+              placeholder="0"
+              type="number"
+              min="0"
+              max="360"
+            />
             
+            <span className="text-sm font-medium text-gray-600 w-8">A:</span>
             {/* Opacity Spinner */}
             <div className="relative flex items-center">
               <Input
                 value={Math.round(opacity)}
                 onChange={handleOpacityInputChange}
-                className="w-16 text-sm text-center pr-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-16 text-sm text-center pr-6"
                 placeholder="100"
                 type="number"
                 min="0"
@@ -153,14 +185,20 @@ export const ColorPicker = () => {
               />
               <div className="absolute right-1 flex flex-col">
                 <button
-                  onClick={() => handleOpacitySpinnerChange(true)}
-                  className="w-4 h-3 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleOpacitySpinnerChange(true);
+                  }}
+                  className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
                   ▲
                 </button>
                 <button
-                  onClick={() => handleOpacitySpinnerChange(false)}
-                  className="w-4 h-3 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleOpacitySpinnerChange(false);
+                  }}
+                  className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
                   ▼
                 </button>

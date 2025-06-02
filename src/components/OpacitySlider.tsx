@@ -57,14 +57,14 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
-        className="w-full h-6 rounded-full cursor-pointer border border-gray-200"
+        className="w-full h-4 rounded-full cursor-pointer border border-gray-200"
         style={{
           background: `linear-gradient(to right, transparent 0%, ${color} 100%)`
         }}
       />
       {/* Slider Handle */}
       <div
-        className="absolute w-6 h-6 bg-white border-2 border-gray-300 rounded-full shadow-lg transform -translate-x-3 -translate-y-0 pointer-events-none"
+        className="absolute w-5 h-5 bg-white border-2 border-gray-300 rounded-full shadow-lg transform -translate-x-2.5 -translate-y-0.5 pointer-events-none"
         style={{
           left: `${opacity}%`,
           top: '0px',

@@ -1,3 +1,4 @@
+
 import React, { useRef, useCallback, useEffect } from 'react';
 
 interface GradientCanvasProps {
@@ -91,6 +92,9 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
 
+  // Calculate the current selected color
+  const selectedColor = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
+
   return (
     <div className="relative">
       <canvas
@@ -101,12 +105,14 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
         className="w-full h-48 rounded-lg cursor-crosshair border border-gray-200"
         style={{ maxWidth: '100%', height: '192px' }}
       />
-      {/* Bigger Selector Circle */}
+      {/* Color Selector Circle with higher z-index, bright gray border, and current color */}
       <div
-        className="absolute w-5 h-5 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-2.5 -translate-y-2.5"
+        className="absolute w-6 h-6 border-3 border-gray-400 rounded-full shadow-lg pointer-events-none transform -translate-x-3 -translate-y-3 z-10"
         style={{
           left: `${saturation}%`,
           top: `${100 - brightness}%`,
+          backgroundColor: selectedColor,
+          borderWidth: '3px'
         }}
       />
     </div>
