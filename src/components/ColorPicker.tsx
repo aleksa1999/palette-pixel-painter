@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -141,7 +142,7 @@ export const ColorPicker = () => {
             size="sm"
             onClick={handleEyedropper}
             className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10"
-            style={{ height: '24px' }}
+            style={{ height: '20px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
@@ -178,7 +179,7 @@ export const ColorPicker = () => {
               value={hex}
               onChange={handleHexChange}
               className="flex-1 font-mono text-sm"
-              placeholder="#D28E9E"
+              placeholder="#F04343"
             />
             
             {/* Inner Opacity Spinner */}

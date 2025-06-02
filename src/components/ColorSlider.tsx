@@ -59,14 +59,14 @@ export const ColorSlider: React.FC<ColorSliderProps> = ({ hue, onChange }) => {
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
-        className="w-full h-3 rounded-full cursor-pointer border border-gray-200"
+        className="w-full h-2 rounded-full cursor-pointer border border-gray-200"
         style={{
           background: 'linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)'
         }}
       />
       {/* Slider Handle with current hue color */}
       <div
-        className="absolute w-5 h-5 border-2 border-gray-300 rounded-full shadow-lg transform -translate-x-2.5 -translate-y-1 pointer-events-none"
+        className="absolute w-4 h-4 border-2 border-gray-300 rounded-full shadow-lg transform -translate-x-2 -translate-y-1 pointer-events-none"
         style={{
           left: `${(hue / 360) * 100}%`,
           top: '0px',

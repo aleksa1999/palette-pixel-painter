@@ -79,7 +79,9 @@ const hexToHsb = (hex: string): HSB => {
 };
 
 export const useColorState = () => {
-  const [hsb, setHsbState] = useState<HSB>({ h: 350, s: 50, b: 80 });
+  // Set default to #F04343
+  const defaultHsb = hexToHsb('#F04343');
+  const [hsb, setHsbState] = useState<HSB>(defaultHsb);
   const [opacity, setOpacity] = useState(100);
 
   const hex = useMemo(() => hsbToHex(hsb), [hsb]);
