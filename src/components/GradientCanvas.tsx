@@ -92,7 +92,7 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // Calculate the current selected color
+  // Calculate the current selected color with 100% opacity
   const selectedColor = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
 
   return (
@@ -105,9 +105,9 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
         className="w-full h-48 rounded-lg cursor-crosshair border border-gray-200"
         style={{ maxWidth: '100%', height: '192px' }}
       />
-      {/* Color Selector Circle with higher z-index, bright gray border, and current color */}
+      {/* Color Selector Circle with current color */}
       <div
-        className="absolute w-6 h-6 border-3 border-gray-400 rounded-full shadow-lg pointer-events-none transform -translate-x-3 -translate-y-3 z-10"
+        className="absolute w-8 h-8 border-3 border-gray-400 rounded-full shadow-lg pointer-events-none transform -translate-x-4 -translate-y-4 z-20"
         style={{
           left: `${saturation}%`,
           top: `${100 - brightness}%`,

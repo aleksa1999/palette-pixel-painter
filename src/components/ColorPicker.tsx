@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GradientCanvas } from './GradientCanvas';
@@ -20,6 +20,7 @@ export const ColorPicker = () => {
   } = useColorState();
 
   const [isOpen, setIsOpen] = useState(false);
+  const opacityIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSaturationBrightnessChange = useCallback((saturation: number, brightness: number) => {
     setHsb(prev => ({ ...prev, s: saturation, b: brightness }));
@@ -38,13 +39,6 @@ export const ColorPicker = () => {
     setHex(value);
   }, [setHex]);
 
-  const handleHueInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value) && value >= 0 && value <= 360) {
-      setHsb(prev => ({ ...prev, h: value }));
-    }
-  }, [setHsb]);
-
   const handleOpacityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (!isNaN(value) && value >= 0 && value <= 100) {
@@ -52,12 +46,38 @@ export const ColorPicker = () => {
     }
   }, [setOpacity]);
 
-  const handleOpacitySpinnerChange = useCallback((increment: boolean) => {
-    const newOpacity = increment ? 
-      Math.min(100, Math.round(opacity) + 1) : 
-      Math.max(0, Math.round(opacity) - 1);
-    setOpacity(newOpacity);
-  }, [opacity, setOpacity]);
+  const handleOpacitySpinnerMouseDown = useCallback((increment: boolean) => {
+    const changeOpacity = () => {
+      setOpacity(prev => {
+        const newOpacity = increment ? 
+          Math.min(100, Math.round(prev) + 1) : 
+          Math.max(0, Math.round(prev) - 1);
+        return newOpacity;
+      });
+    };
+
+    // Immediate change
+    changeOpacity();
+
+    // Start continuous change after a delay
+    const timeout = setTimeout(() => {
+      opacityIntervalRef.current = setInterval(changeOpacity, 100);
+    }, 300);
+
+    // Cleanup function
+    const cleanup = () => {
+      clearTimeout(timeout);
+      if (opacityIntervalRef.current) {
+        clearInterval(opacityIntervalRef.current);
+        opacityIntervalRef.current = null;
+      }
+      document.removeEventListener('mouseup', cleanup);
+      document.removeEventListener('mouseleave', cleanup);
+    };
+
+    document.addEventListener('mouseup', cleanup);
+    document.addEventListener('mouseleave', cleanup);
+  }, [setOpacity]);
 
   const handleEyedropper = useCallback(() => {
     if ('EyeDropper' in window) {
@@ -117,13 +137,13 @@ export const ColorPicker = () => {
             variant="ghost"
             size="sm"
             onClick={handleEyedropper}
-            className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10 h-10"
-            style={{ height: '48px' }}
+            className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10"
+            style={{ height: '36px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
           
-          <div className="flex-1 space-y-1">
+          <div className="flex-1 space-y-2">
             {/* Hue Slider */}
             <div>
               <ColorSlider
@@ -160,18 +180,6 @@ export const ColorPicker = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-gray-600 w-8">H:</span>
-            <Input
-              value={Math.round(hsb.h)}
-              onChange={handleHueInputChange}
-              className="flex-1 text-sm"
-              placeholder="0"
-              type="number"
-              min="0"
-              max="360"
-            />
-            
-            <span className="text-sm font-medium text-gray-600 w-8">A:</span>
             {/* Opacity Spinner */}
             <div className="relative flex items-center">
               <Input
@@ -187,7 +195,7 @@ export const ColorPicker = () => {
                 <button
                   onMouseDown={(e) => {
                     e.preventDefault();
-                    handleOpacitySpinnerChange(true);
+                    handleOpacitySpinnerMouseDown(true);
                   }}
                   className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
@@ -196,7 +204,7 @@ export const ColorPicker = () => {
                 <button
                   onMouseDown={(e) => {
                     e.preventDefault();
-                    handleOpacitySpinnerChange(false);
+                    handleOpacitySpinnerMouseDown(false);
                   }}
                   className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
