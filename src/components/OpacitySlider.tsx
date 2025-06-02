@@ -52,34 +52,23 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ opacity, color, on
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // Calculate the current selected color with current opacity
-  const currentColor = (() => {
-    if (color.startsWith('#') && color.length === 7) {
-      const r = parseInt(color.slice(1, 3), 16);
-      const g = parseInt(color.slice(3, 5), 16);
-      const b = parseInt(color.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
-    }
-    return color;
-  })();
-
   return (
     <div className="relative">
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
-        className="w-full h-3 rounded-full cursor-pointer border border-gray-200"
+        className="w-full h-2 rounded-full cursor-pointer border border-gray-200"
         style={{
           background: `linear-gradient(to right, transparent 0%, ${color} 100%)`
         }}
       />
-      {/* Slider Handle with current opacity color */}
+      {/* Slider Handle with white color only */}
       <div
-        className="absolute w-5 h-5 border-2 border-gray-300 rounded-full shadow-lg transform -translate-x-2.5 -translate-y-1 pointer-events-none"
+        className="absolute w-4 h-4 border-2 border-gray-400 rounded-full shadow-lg transform -translate-x-2 -translate-y-1 pointer-events-none z-30"
         style={{
           left: `${opacity}%`,
           top: '0px',
-          backgroundColor: currentColor,
+          backgroundColor: 'white',
         }}
       />
     </div>

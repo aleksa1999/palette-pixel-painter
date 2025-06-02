@@ -5,6 +5,7 @@ interface GradientCanvasProps {
   hue: number;
   saturation: number;
   brightness: number;
+  previewColor: string;
   onChange: (saturation: number, brightness: number) => void;
 }
 
@@ -12,6 +13,7 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
   hue,
   saturation,
   brightness,
+  previewColor,
   onChange
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -92,9 +94,6 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // Calculate the current selected color with 100% opacity
-  const selectedColor = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
-
   return (
     <div className="relative">
       <canvas
@@ -105,14 +104,13 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
         className="w-full h-48 rounded-lg cursor-crosshair border border-gray-200"
         style={{ maxWidth: '100%', height: '192px' }}
       />
-      {/* Color Selector Circle with current color */}
+      {/* Color Selector Circle with preview color */}
       <div
-        className="absolute w-8 h-8 border-3 border-gray-400 rounded-full shadow-lg pointer-events-none transform -translate-x-4 -translate-y-4 z-20"
+        className="absolute w-5 h-5 border-2 border-gray-400 rounded-full shadow-lg pointer-events-none transform -translate-x-2.5 -translate-y-2.5 z-30"
         style={{
           left: `${saturation}%`,
           top: `${100 - brightness}%`,
-          backgroundColor: selectedColor,
-          borderWidth: '3px'
+          backgroundColor: previewColor,
         }}
       />
     </div>

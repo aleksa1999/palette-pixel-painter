@@ -46,7 +46,10 @@ export const ColorPicker = () => {
     }
   }, [setOpacity]);
 
-  const handleOpacitySpinnerMouseDown = useCallback((increment: boolean) => {
+  const handleOpacitySpinnerMouseDown = useCallback((increment: boolean, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const changeOpacity = () => {
       setOpacity(prev => {
         const newOpacity = increment ? 
@@ -127,6 +130,7 @@ export const ColorPicker = () => {
             hue={hsb.h}
             saturation={hsb.s}
             brightness={hsb.b}
+            previewColor={hex}
             onChange={handleSaturationBrightnessChange}
           />
         </div>
@@ -138,7 +142,7 @@ export const ColorPicker = () => {
             size="sm"
             onClick={handleEyedropper}
             className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10"
-            style={{ height: '36px' }}
+            style={{ height: '32px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
@@ -163,10 +167,10 @@ export const ColorPicker = () => {
           </div>
         </div>
 
-        {/* Custom Color Section */}
+        {/* Custom Color Section - One Line */}
         <div className="mb-6">
           <h3 className="text-sm font-medium text-gray-500 mb-3">Custom Color</h3>
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3">
             <div 
               className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0"
               style={{ backgroundColor: colorWithOpacity }}
@@ -177,11 +181,9 @@ export const ColorPicker = () => {
               className="flex-1 font-mono text-sm"
               placeholder="#D28E9E"
             />
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Opacity Spinner */}
-            <div className="relative flex items-center">
+            
+            {/* Inner Opacity Spinner */}
+            <div className="relative">
               <Input
                 value={Math.round(opacity)}
                 onChange={handleOpacityInputChange}
@@ -191,21 +193,15 @@ export const ColorPicker = () => {
                 min="0"
                 max="100"
               />
-              <div className="absolute right-1 flex flex-col">
+              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex flex-col">
                 <button
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    handleOpacitySpinnerMouseDown(true);
-                  }}
+                  onMouseDown={(e) => handleOpacitySpinnerMouseDown(true, e)}
                   className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
                   ▲
                 </button>
                 <button
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    handleOpacitySpinnerMouseDown(false);
-                  }}
+                  onMouseDown={(e) => handleOpacitySpinnerMouseDown(false, e)}
                   className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
                 >
                   ▼
