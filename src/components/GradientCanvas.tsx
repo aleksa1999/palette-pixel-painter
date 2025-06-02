@@ -1,5 +1,4 @@
-
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 
 interface GradientCanvasProps {
   hue: number;
@@ -102,9 +101,9 @@ export const GradientCanvas: React.FC<GradientCanvasProps> = ({
         className="w-full h-48 rounded-lg cursor-crosshair border border-gray-200"
         style={{ maxWidth: '100%', height: '192px' }}
       />
-      {/* Selector Circle */}
+      {/* Bigger Selector Circle */}
       <div
-        className="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-2 -translate-y-2"
+        className="absolute w-5 h-5 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-2.5 -translate-y-2.5"
         style={{
           left: `${saturation}%`,
           top: `${100 - brightness}%`,

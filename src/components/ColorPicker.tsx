@@ -99,13 +99,13 @@ export const ColorPicker = () => {
             variant="ghost"
             size="sm"
             onClick={handleEyedropper}
-            className="p-2 hover:bg-gray-100 flex-shrink-0"
-            style={{ height: '60px' }}
+            className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10 h-10"
+            style={{ height: '56px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
           
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-1">
             {/* Hue Slider */}
             <div>
               <ColorSlider
@@ -140,7 +140,7 @@ export const ColorPicker = () => {
               placeholder="#D28E9E"
             />
             
-            {/* Opacity Spinner - Remove browser default spinners */}
+            {/* Opacity Spinner */}
             <div className="relative flex items-center">
               <Input
                 value={Math.round(opacity)}

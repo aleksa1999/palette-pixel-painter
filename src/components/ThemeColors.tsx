@@ -17,7 +17,7 @@ const themeColors = [
 
 export const ThemeColors: React.FC<ThemeColorsProps> = ({ onColorSelect }) => {
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex gap-2 justify-start">
       {themeColors.map((color, index) => (
         <button
           key={index}
