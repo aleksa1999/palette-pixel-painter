@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -142,7 +141,7 @@ export const ColorPicker = () => {
             size="sm"
             onClick={handleEyedropper}
             className="p-2 hover:bg-gray-100 flex-shrink-0 border-2 border-gray-300 w-10"
-            style={{ height: '32px' }}
+            style={{ height: '24px' }}
           >
             <Pipette className="w-4 h-4" />
           </Button>
@@ -193,7 +192,7 @@ export const ColorPicker = () => {
                 min="0"
                 max="100"
               />
-              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex flex-col">
+              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex flex-col gap-0.5">
                 <button
                   onMouseDown={(e) => handleOpacitySpinnerMouseDown(true, e)}
                   className="w-3 h-2 text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center leading-none"
